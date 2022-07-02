@@ -1,26 +1,24 @@
 import user from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
+import config from "../config.js";
 
-export const register = async (req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const { nameUser, email, password } = req.body;
         if (nameUser && email && password) {
-            const repeatedUser = await user.findOne({ email });
-            if (repeatedUser) {
-                res.status(400).json("The email is already in use");
-            } else {
-                const newUser = new user({ 
-                    nameUser,
-                    email,
-                    password: bcrypt.hashSync(password, 10),              
-                });  
-                await newUser.save();
-                res.status(201).json("user created successfully");
-            }
-        } else { res.status(400).json("there is not enough data"); }
-    } catch (mistake) { res.status(404).json(mistake); } 
+            const newUser = new user({ 
+                nameUser,
+                email,
+                password: bcrypt.hashSync(password, 10),              
+            });  
+            await newUser.save();
+            res.status(201);
+        } else { res.status(404); }
+    } catch (err) { res.status(400).json(err); }
 };
 
-export const login = async (req, res) => {
+export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         if (email && password) {
@@ -35,6 +33,6 @@ export const login = async (req, res) => {
                 res.status(200).json({ auth: true, token });
             }
         }
-        else { res.status(400).json("there is not enough data"); }
-    } catch (mistake) { res.status(404).json(mistake); }
+        else { res.status(404) }
+    } catch (err) { res.status(400).json(err); }
 };
