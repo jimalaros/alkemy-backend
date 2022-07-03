@@ -1,13 +1,12 @@
 import pkg from "mongoose";
 const { Schema, model } = pkg;
 
-const GeneroSchema = new Schema({
-    nombre: { type: String, required:true },
-    imagen: { type: String, required:true },
-    peliculas: [{
-        titulo: { type: Array, required: true },
-        calificacion: { type: Array, required: true }
+const genreSchema = new Schema({
+    genreMovie: { type: String, required:true },
+    image: { type: String, required:true },
+    movies: [{
+        title: { type: Array, required: true }
     }]
 });
 
-export default model('Genero', GeneroSchema);
+export default model('genre', genreSchema);

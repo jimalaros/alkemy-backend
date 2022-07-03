@@ -14,8 +14,8 @@ export const registerUser = async (req, res) => {
             });  
             await newUser.save();
             res.status(201);
-        } else { res.status(404); }
-    } catch (err) { res.status(400).json(err); }
+        } else { res.status(400).json("There is not enough data"); }
+    } catch (err) { res.status(500).json(err); }
 };
 
 export const loginUser = async (req, res) => {
@@ -32,7 +32,6 @@ export const loginUser = async (req, res) => {
                 });
                 res.status(200).json({ auth: true, token });
             }
-        }
-        else { res.status(404) }
-    } catch (err) { res.status(400).json(err); }
+        } else { res.status(400).json("There is not enough data"); }
+    } catch (err) { res.status(500).json(err); }
 };

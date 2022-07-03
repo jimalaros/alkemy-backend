@@ -15,14 +15,28 @@ const router = Router();
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/register'
+ *                    type: object
+ *                    required:
+ *                      -nameUser
+ *                      -email
+ *                      -password
+ *                    properties:
+ *                      nameUser:
+ *                          type: string
+ *                          example: "J"
+ *                      email:
+ *                          type: string
+ *                          example: "j@gmail.com"
+ *                      password:
+ *                          type: string
+ *                          example: "1234"
  *      responses:
- *          201:
+ *          "201":
  *              description: User created successfully
- *          404:
- *              description: There is not enough data
- *          400:
+ *          "400":
  *              description: Bad Request
+ *          "500":
+ *              description: Internal Server Error
  */
 router.post("/register", user.registerUser);
 
@@ -38,60 +52,27 @@ router.post("/register", user.registerUser);
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/login'
+ *                    type: object
+ *                    required:
+ *                      -email
+ *                      -password
+ *                    properties:
+ *                      email:
+ *                          type: string
+ *                          example: "j@gmail.com"
+ *                      password:
+ *                          type: string
+ *                          example: "1234"
  *      responses:
- *          401:
+ *          "401":
  *              description: User unauthorized
- *          200:
+ *          "200":
  *              description: Ok
- *          404:
- *              description: There is not enough data
- *          400:
+ *          "400":
  *              description: Bad Request
+ *          "500":
+ *              description: Internal Server Error
  */
 router.post("/login", user.loginUser);
-
-/**
- * @swagger
- * tags:
- *  name: 'Auth'
- *  description: 'To register a user inside the app'
- * 
- * components:
- *   schemas:
- *     register:
- *         type: object
- *         required:
- *             -nameUser
- *             -email
- *             -password
- *         properties:
- *             nameUser:
- *                 type: string
- *             email:
- *                 type: string
- *             password:
- *                 type: string
- */
-
-/**
- * @swagger
- * tags:
- *  name : 'Auth'
- *  description: 'To log in'
- * 
- * components:
- *  schemas:
- *      login:
- *          type: object
- *          required:
- *              -email
- *              -password
- *          properties:
- *              email:
- *                 type: string
- *              password:
- *                 type: string
-*/
 
 export default router;

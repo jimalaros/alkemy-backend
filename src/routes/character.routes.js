@@ -13,31 +13,68 @@ const router = Router();
  *      responses:
  *          200:
  *              description: Ok
- *          400:
+ *          500:
  *              description: Bad Request
  */
 router.get('/', Verificar, character.allCharacters);
 
 /**
  * @swagger
- * /characters/{name}:
+ * /characters/detail/nameCharacter?nameCharacter=queryName::
  *  get:
- *      summary: To filter the characters by its name
+ *      summary: To get all the characters
  *      tags: [Characters]
  *      parameters:
- *          - name: name
- *            in: path
+ *          - name: queryName
+ *            in: query
  *            required: true
  *            description: name of the character
  *            schema: 
  *              type: string
+ *              required:
+ *                -queryName
+ *              properties:
+ *                 queryName:
+ *                      type: string
+ *                      example: "Will Smith"
  *      responses:
  *          200:
  *              description: Ok
- *          400:
+ *          404:
+ *              description: Not Found
+ *          500:
+ *              description: Internal Server Error
+ */
+ router.get('/detail/nameCharacter', Verificar, character.detailCharacter);
+
+/**
+ * @swagger
+ * /characters/nameCharacter?nameCharacter=queryName:
+ *  get:
+ *      summary: To filter the characters by its name
+ *      tags: [Characters]
+ *      parameters:
+ *          - name: queryName
+ *            in: query
+ *            required: true
+ *            description: name of the character
+ *            schema: 
+ *              type: string
+ *              required:
+ *                -queryName
+ *              properties:
+ *                 queryName:
+ *                      type: string
+ *                      example: "Will Smith"
+ *      responses:
+ *          200:
+ *              description: Ok
+ *          404:
+ *              description: Not Found
+ *          500:
  *              description: Bad Request
  */
-router.get('/:name', Verificar, character.characterName);
+router.get('/nameCharacter', Verificar, character.characterName);
 
 /**
  * @swagger
@@ -52,10 +89,16 @@ router.get('/:name', Verificar, character.characterName);
  *            description: age of the character
  *            schema: 
  *              type: string
+ *              properties:
+ *                 age:
+ *                      type: number
+ *                      example: 50
  *      responses:
  *          200:
  *              description: Ok
- *          400:
+ *          404:
+ *              description: Not Found
+ *          500:
  *              description: Bad Request
  */
 router.get('/:age', Verificar, character.characterAge);
@@ -66,20 +109,41 @@ router.get('/:age', Verificar, character.characterAge);
  *  post:
  *      summary: To create a new character
  *      tags: [Characters]
- *      security: []
  *      requestBody:
  *          required: true
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/character'
+ *                    type: object
+ *                    required:
+ *                      -nameCharacter
+ *                      -age
+ *                      -weight
+ *                      -imageCharacter
+ *                      -history
+ *                    properties:
+ *                      nameCharacter:
+ *                          type: string
+ *                          example: "Morgan Freeman"
+ *                      age:
+ *                          type: number
+ *                          example: 85
+ *                      weight:
+ *                          type: number
+ *                          example: 65
+ *                      imageCharacter:
+ *                          type: string
+ *                          example: "MorganFreman.jpg"
+ *                      history:
+ *                          type: string
+ *                          example: "Hollywood actor"            
  *      responses:
  *          201:
  *              description: Character created successfully
- *          404:
- *              description: There is not enough data
  *          400:
  *              description: Bad Request
+ *          500:
+ *              description: Internal Server Error
  */
 router.post('/newCharacter', Verificar, character.newCharacter);
 
@@ -96,17 +160,20 @@ router.post('/newCharacter', Verificar, character.newCharacter);
  *            description: id of the character
  *            schema: 
  *              type: string
+ *              example: "62bc788a0b718d90f48fd8ef"
  *      responses:
  *          200:
  *              description: Ok
  *          400:
  *              description: Bad Request
+ *          500:
+ *              description: Internal Server Error
  */
 router.put('/update/:id', Verificar, character.updateCharacters);
 
 /**
  * @swagger
- * /characters/update/{id}:
+ * /characters/delete/{id}:
  *  delete:
  *      summary: To delete a character by its id
  *      tags: [Characters]
@@ -122,36 +189,9 @@ router.put('/update/:id', Verificar, character.updateCharacters);
  *              description: Ok
  *          400:
  *              description: Bad Request
+ *          500:
+ *              description: Internal Server Error
  */
 router.delete('/delete/:id', Verificar, character.deleteCharacters);
-
-/**
- * @swagger
- * tags:
- *  name: 'Characters'
- *  description: 'To register a character inside the app'
- * 
- * components:
- *   schemas:
- *     character:
- *         type: object
- *         required:
- *             -nameCharacter
- *             -age
- *             -weight
- *             -image
- *             -history
- *         properties:
- *             nameCharacter:
- *                 type: string
- *             age:
- *                 type: number
- *             weight:
- *                 type: number
- *             image:
- *                 type: string
- *             history:
- *                 type: string
- */
 
 export default router;

@@ -1,58 +1,72 @@
 import character from '../models/character.model.js';
-import { allMovies } from './movie.controller.js';
+import movie from '../models/movie.model.js'
 
 export const allCharacters = async (req,res) => {
     try {
         const characters = await character.find();
         res.json(characters);
-    } catch (error) { res.status(400).json(error); }
+    } catch (err) { res.status(500).json(err); }
 };
 
 export const detailCharacter = async (req,res) => {
     try {
-        const { nameCharacter } = req.params;
-        const characters = allMovies.characters;
-       
-        for (let index = 0; index < characters.length; index++) {
-            const element = characters[index];
-            if (element == nameCharacter) {
-                res.json(element);
-            } else {
-                res.status(400).json({ msg: "The character does not have any movie asociated" });
-            }
-        }
-    } catch (error) { res.status(404).json(error); }
+        const { queryName } = req.query;
+
+        const characterFound = await character.findOne({ nameCharacter: queryName });
+        const movies = await movie.find().sort({ date: 'desc' }).lean();
+
+        const names = movies.map(nameToFind => nameToFind.characters);
+
+        const vector = names.flat();
+
+        vector.forEach(element => {
+            if(element == queryName) {
+                for (let index = 0; index < movies.length; index++) {
+                    const name = movies[index].characters[index];
+                    //(element == name) ? res.json(`The movie asociated to ${queryName} is ${movies[index].titleMovie}`) : res.status(404);
+                    if (element == name) {
+                        const movie = movies[index].titleMovie;
+                        const object = {
+                            characterFound, 
+                            movie
+                        }
+                        res.status(200).json(object)
+                    } else { res.status(404) }
+                }  
+            } else { res.status(404) }
+        });
+    } catch (err) { res.status(500).json(err); }
 };
 
 export const characterName = async (req,res) => {
     try {
-        const { nameCharacter } = req.params;
-        const characters = await character.findOne({ nameCharacter });
-        res.json(characters);
-    } catch (error) { res.status(400).json(error); }
+        const { queryName } = req.query;
+        const characterFound = await character.findOne({ nameCharacter: queryName });
+        (characterFound) ? res.json(characterFound) : res.status(404).json({err: 'The character does not exist' });
+    } catch (err) { res.status(500).json(err); }
 };
 
 export const characterAge = async (req,res) => {
     try {
-        const { ageCharacter } = req.params;
-        const characters = await character.findOne({ ageCharacter });
-        res.json(characters);
-    } catch (error) { res.status(400).json(error); }
+        const { age } = req.params;
+        const characterFound = await character.findOne({ age });
+        (characterFound) ? res.json(characterFound) : res.status(404).json({err: 'The character does not exist' });
+    } catch (err) { res.status(500).json(err); }
 };
 
 export const newCharacter = async (req, res) => {
-    const { imageCharacter, nameCharacter, ageCharacter, weight, history } = req.body;
+    const { nameCharacter, age, weight, imageCharacter, history } = req.body;
     try {
-        if (imageCharacter && nameCharacter && ageCharacter && weight && history) {
+        if (nameCharacter && age && weight && imageCharacter && history) {
             const repeatedCharacter = await character.findOne({ nameCharacter });
             if (repeatedCharacter) {
-                res.status(400).json("The character is already in registered");
+                res.json({err: 'The character is already registered'});
             } else {
                 new character({ ...req.body }).save();
                 res.status(201).json({ msg: "Character created successfully" });
             }
-        } else { res.status(400).json({ msg: "There is not enough data" }); }
-    } catch (error) { res.status(400).json(error); }
+        } else { res.status(400).json({err: 'There is not enough data'}); }
+    } catch (err) { res.status(500).json(err); }
 };
 
 export const updateCharacters = async (req, res) => {
@@ -65,8 +79,8 @@ export const updateCharacters = async (req, res) => {
             await character.findByIdAndUpdate(id, updates, options);
             res.status(200).json({ msg: "Character updated successfully" });
         }
-        else { res.status(400).json({ msg: "There is not enough data" }); }
-    } catch (error) { res.status(404).json(error); }
+        else { res.status(400).json({err: 'There is not enough data'}); }
+    } catch (err) { res.status(500).json(err); }
 };
 
 export const deleteCharacters = async (req, res) => {
@@ -76,5 +90,5 @@ export const deleteCharacters = async (req, res) => {
             await character.findByIdAndDelete(id);
             res.status(200).json({msg: 'El producto fue eliminado con exito' });
         } else { res.status(400).json({ msg: "There is not enough data" }); }
-    } catch (error) { res.status(404).json(error); }
+    } catch (err) { res.status(500).json(err); }
 };
