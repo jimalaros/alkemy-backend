@@ -14,13 +14,15 @@ npm install
 
 2. Encender el servicio de mongo
 
-3. Una vez encendido el servicio de mongo, ejecutar el proyecto con el siguiente comando:
+3. Crear un archivo .env con los datos adjuntos
+
+4. Una vez encendido creado el .env y con el servicio de mongo encendido, ejecutar el proyecto con el siguiente comando:
 
 ```
 npm start
 ```
 
-4. Dirigirse al siguiente [link](http://localhost:5000/api).
+5. Dirigirse al siguiente [link](http://localhost:5000/api).
 
 ## Autores ✒️
 
